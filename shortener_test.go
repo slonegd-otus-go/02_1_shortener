@@ -8,7 +8,7 @@ import (
 	shortener "github.com/slonegd-otus-go/02_1_shortener"
 )
 
-func Test_shortener_Shorten(t *testing.T) {
+func Test_shortener_Shortener(t *testing.T) {
 	chars := []rune{'0', '1'}
 	shortener := shortener.New(2, chars)
 
@@ -33,6 +33,24 @@ func Test_shortener_Shorten(t *testing.T) {
 
 			assert.NotContains(t, urls, got)
 			urls = append(urls, got)
+		})
+	}
+}
+
+func Test_shortener_Resolve(t *testing.T) {
+	chars := []rune{'0', '1'}
+	shortener := shortener.New(2, chars)
+
+	long := []string{"test", "another", "something", "Harry Potter"}
+	short := make([]string, 0, len(long))
+	for _, url := range long {
+		short = append(short, shortener.Shorten(url))
+	}
+
+	for i, long := range long {
+		t.Run(long, func(t *testing.T) {
+			got := shortener.Resolve(short[i])
+			assert.Equal(t, long, got)
 		})
 	}
 }
