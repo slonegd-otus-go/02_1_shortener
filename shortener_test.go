@@ -41,7 +41,7 @@ func Test_shortener_Resolve(t *testing.T) {
 	chars := []rune{'0', '1'}
 	shortener := shortener.New(2, chars)
 
-	long := []string{"test", "another", "something", "Harry Potter"}
+	long := []string{"otus.ru/test", "otus.ru/another", "otus.ru/something", "otus.ru/Harry_Potter"}
 	short := make([]string, 0, len(long))
 	for _, url := range long {
 		short = append(short, shortener.Shorten(url))

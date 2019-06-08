@@ -3,6 +3,7 @@ package shortener
 import (
 	"math"
 	"math/rand"
+	"strings"
 )
 
 type shortener struct {
@@ -27,17 +28,19 @@ func (s *shortener) Shorten(url string) string {
 		return ""
 	}
 
+	domain := domain(url)
+
 	short := s.random()
-	_, ok := s.data[short]
+	_, ok := s.data[domain+short]
 
 	for ok {
 		s.increment(&short)
-		_, ok = s.data[short]
+		_, ok = s.data[domain+short]
 	}
 
-	s.data[short] = url
+	s.data[domain+short] = url
 
-	return short
+	return domain + short
 }
 
 func (s shortener) Resolve(url string) string {
@@ -91,4 +94,9 @@ func (s *shortener) fromIndexes(indexes []int) string {
 		str += string(s.runes[i])
 	}
 	return str
+}
+
+func domain(url string) string {
+	i := strings.Index(url, "/")
+	return string(url[:i+1])
 }
