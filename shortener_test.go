@@ -31,8 +31,8 @@ func Test_shortener_Shorten(t *testing.T) {
 			got := shortener.Shorten(tt.url)
 			assert.Equal(t, tt.wantLenUrl, len(got))
 
-			urls := append(urls, got)
 			assert.NotContains(t, urls, got)
+			urls = append(urls, got)
 		})
 	}
 }
