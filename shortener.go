@@ -41,6 +41,9 @@ func (s *shortener) Shorten(url string) string {
 }
 
 func (s shortener) Resolve(url string) string {
+	if long, ok := s.data[url]; ok {
+		return long
+	}
 	return ""
 }
 
@@ -73,12 +76,13 @@ func (s *shortener) toIndexes(str string) []int {
 }
 
 func (s *shortener) findIndex(r rune) int {
-	for i, sr := range s.runes {
-		if r == sr {
-			return i
+	i := 0
+	for i = range s.runes {
+		if r == s.runes[i] {
+			break
 		}
 	}
-	return 0
+	return i
 }
 
 func (s *shortener) fromIndexes(indexes []int) string {

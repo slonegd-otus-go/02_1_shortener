@@ -53,4 +53,6 @@ func Test_shortener_Resolve(t *testing.T) {
 			assert.Equal(t, long, got)
 		})
 	}
+
+	assert.Equal(t, "", shortener.Resolve("not exist"))
 }
