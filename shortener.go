@@ -51,11 +51,11 @@ func (s shortener) Resolve(url string) string {
 }
 
 func (s *shortener) random() string {
-	str := ""
+	var builder strings.Builder
 	for i := 0; i < s.runesQuantity; i++ {
-		str += string(s.runes[rand.Intn(len(s.runes))])
+		builder.WriteRune(s.runes[rand.Intn(len(s.runes))])
 	}
-	return str
+	return builder.String()
 }
 
 func (s *shortener) increment(str *string) {
@@ -89,11 +89,11 @@ func (s *shortener) findIndex(r rune) int {
 }
 
 func (s *shortener) fromIndexes(indexes []int) string {
-	str := ""
+	var builder strings.Builder
 	for _, i := range indexes {
-		str += string(s.runes[i])
+		builder.WriteRune(s.runes[i])
 	}
-	return str
+	return builder.String()
 }
 
 func domain(url string) string {
