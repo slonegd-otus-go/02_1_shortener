@@ -44,10 +44,7 @@ func (s *shortener) Shorten(url string) string {
 }
 
 func (s shortener) Resolve(url string) string {
-	if long, ok := s.data[url]; ok {
-		return long
-	}
-	return ""
+	return s.data[url]
 }
 
 func (s *shortener) random() string {
