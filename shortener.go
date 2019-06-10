@@ -3,6 +3,7 @@ package shortener
 import (
 	"math"
 	"math/rand"
+	"net/url"
 	"strings"
 )
 
@@ -23,12 +24,29 @@ func New(runesQuantity int, runes []rune) *shortener {
 	}
 }
 
-func (s *shortener) Shorten(url string) string {
+func (s *shortener) Shorten(in string) string {
 	if len(s.data) == s.maxLen {
 		return ""
 	}
 
-	domain := domain(url)
+	url, err := url.Parse(in)
+	if err != nil {
+		println(err.Error())
+		return ""
+	}
+	if len(url.Host) == 0 {
+		println("Must be host name")
+		return ""
+	}
+
+	var builder strings.Builder
+	if len(url.Scheme) != 0 {
+		builder.WriteString(url.Scheme)
+		builder.WriteString("://")
+	}
+	builder.WriteString(url.Host)
+	builder.WriteRune('/')
+	domain := builder.String()
 
 	short := s.random()
 	_, ok := s.data[domain+short]
@@ -38,7 +56,7 @@ func (s *shortener) Shorten(url string) string {
 		_, ok = s.data[domain+short]
 	}
 
-	s.data[domain+short] = url
+	s.data[domain+short] = in
 
 	return domain + short
 }
@@ -91,9 +109,4 @@ func (s *shortener) fromIndexes(indexes []int) string {
 		builder.WriteRune(s.runes[i])
 	}
 	return builder.String()
-}
-
-func domain(url string) string {
-	i := strings.Index(url, "/")
-	return string(url[:i+1])
 }
