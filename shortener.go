@@ -34,7 +34,7 @@ func (s *shortener) Shorten(url string) string {
 	_, ok := s.data[domain+short]
 
 	for ok {
-		s.increment(&short)
+		short = s.increment(short)
 		_, ok = s.data[domain+short]
 	}
 
@@ -58,8 +58,8 @@ func (s *shortener) random() string {
 	return builder.String()
 }
 
-func (s *shortener) increment(str *string) {
-	indexes := s.toIndexes(*str)
+func (s *shortener) increment(in string) string {
+	indexes := s.toIndexes(in)
 	for i := range indexes {
 		indexes[i]++
 		if indexes[i] < len(s.runes) {
@@ -67,7 +67,7 @@ func (s *shortener) increment(str *string) {
 		}
 		indexes[i] = 0
 	}
-	*str = s.fromIndexes(indexes)
+	return s.fromIndexes(indexes)
 }
 
 func (s *shortener) toIndexes(str string) []int {
