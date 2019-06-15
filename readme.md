@@ -2,7 +2,7 @@
 
 Написать тип, который реализует интерфейс:
 
-```
+```golang
 type Shortener interface {
     Shorten(url string) string
     Resolve(url string) string
