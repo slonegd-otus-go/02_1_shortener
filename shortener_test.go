@@ -1,6 +1,7 @@
 package shortener_test
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,15 +14,18 @@ func Test_shortener_Shortener(t *testing.T) {
 	shortener := shortener.New(2, chars)
 
 	tests := []struct {
-		name       string
-		url        string
-		wantLenUrl int
+		name        string
+		url         string
+		wantLenUrl  int
+		mustContain string
 	}{
-		{"1", "1", 2},
-		{"big string", "big string", 2},
-		{"another string", "another string", 2},
-		{"last able string", "last able string", 2},
-		{"vocabluary full", "something", 0},
+		{"http://otus.ru/1", "http://otus.ru/1", 2, "http://otus.ru/"},
+		{"without scheme", "otus.ru/1", -1, ""},
+		{"bad URL", "://otus.ru/2", -1, ""},
+		{"https://otus.ru/big_string", "https://otus.ru/big_string", 2, "https://otus.ru/"},
+		{"http://google.com/another_string", "http://google.com/another_string", 2, "http://google.com/"},
+		{"https://otus.ru/last_able_string", "https://otus.ru/last_able_string", 2, "https://otus.ru/"},
+		{"vocabluary full", "http://otus.ru/something", -1, ""},
 	}
 
 	urls := []string{}
@@ -29,10 +33,14 @@ func Test_shortener_Shortener(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := shortener.Shorten(tt.url)
-			assert.Equal(t, tt.wantLenUrl, len(got))
+			url, _ := url.Parse(got)
+			assert.Equal(t, tt.wantLenUrl, len(url.Path)-1)
+			assert.Contains(t, got, tt.mustContain)
 
 			assert.NotContains(t, urls, got)
-			urls = append(urls, got)
+			if len(got) > 0 {
+				urls = append(urls, got)
+			}
 		})
 	}
 }
@@ -41,7 +49,8 @@ func Test_shortener_Resolve(t *testing.T) {
 	chars := []rune{'0', '1'}
 	shortener := shortener.New(2, chars)
 
-	long := []string{"otus.ru/test", "otus.ru/another", "otus.ru/something", "otus.ru/Harry_Potter"}
+	long := []string{"http://otus.ru/test", "http://otus.ru/another", "https://otus.ru/teacher-lk/homework/49392/3743/", "http://otus.ru/Harry_Potter"}
+	domain := []string{"http://otus.ru/", "http://otus.ru/", "https://otus.ru/", "http://otus.ru/"}
 	short := make([]string, 0, len(long))
 	for _, url := range long {
 		short = append(short, shortener.Shorten(url))
@@ -51,6 +60,7 @@ func Test_shortener_Resolve(t *testing.T) {
 		t.Run(long, func(t *testing.T) {
 			got := shortener.Resolve(short[i])
 			assert.Equal(t, long, got)
+			assert.Contains(t, got, domain[i])
 		})
 	}
 
